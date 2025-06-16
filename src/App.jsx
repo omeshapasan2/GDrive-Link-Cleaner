@@ -1,11 +1,12 @@
 import React from "react";
 import UrlCleaner from "./UrlCleaner";
+import { BackgroundGradientAnimation } from "./components/ui/background-gradient-animation";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <BackgroundGradientAnimation>
       <UrlCleaner />
-    </div>
+    </BackgroundGradientAnimation>
   );
 }
 
