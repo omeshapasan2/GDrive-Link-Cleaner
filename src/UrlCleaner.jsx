@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Moon, Sun, Copy, Download, ExternalLink, Trash2, Check, Zap } from "lucide-react";
+import GuideModal from "./components/GuideModal";
 
 function cleanUrl(url) {
   // Remove "range=...&" from URL
@@ -109,10 +110,10 @@ export default function UrlCleaner() {
             </div>
             <div>
               <h1 className={`text-2xl font-bold ${themeClasses.text}`}>
-                URL Cleaner Pro
+                GDrive URL Cleaner
               </h1>
               <p className={`text-sm ${themeClasses.textSecondary}`}>
-                Clean Google Drive URLs instantly
+                Clean View-Only Google Drive URLs instantly
               </p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import UrlCleaner from "./UrlCleaner";
 import { cn } from "./lib/utils";
+import GuideModal from "./components/GuideModal";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         )}
     />
       <UrlCleaner />
+      <GuideModal />
     </div>    
   );
 }
