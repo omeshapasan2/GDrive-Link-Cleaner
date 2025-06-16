@@ -90,7 +90,6 @@ export default function UrlCleaner() {
   };
 
   const themeClasses = {
-    bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
     cardBg: isDark ? 'bg-black' : 'bg-white',
     text: isDark ? 'text-white' : 'text-gray-900',
     textSecondary: isDark ? 'text-gray-300' : 'text-gray-600',
@@ -100,7 +99,7 @@ export default function UrlCleaner() {
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${themeClasses.bg} flex items-center justify-center p-4 z-999`}>
+    <div className={`min-h-screen transition-all duration-500 flex items-center justify-center p-4 z-999`}>
       <div className={`w-full max-w-4xl ${themeClasses.cardBg} shadow-2xl rounded-2xl overflow-hidden transition-all duration-500 transform hover:scale-[1.01]`}>
         {/* Header */}
         <div className={`p-6 border-b ${themeClasses.border} flex items-center justify-between`}>
