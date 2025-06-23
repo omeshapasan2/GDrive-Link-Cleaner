@@ -15,7 +15,7 @@ function App() {
         )}
     />
       <UrlCleaner />
-      <GuideModal />
+      
     </div>    
   );
 }

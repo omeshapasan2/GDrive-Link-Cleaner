@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Moon, Sun, Copy, Download, ExternalLink, Trash2, Check, Zap } from "lucide-react";
+import { Moon, Sun, Copy, Download, ExternalLink, Trash2, Check, Zap, X } from "lucide-react";
 import GuideModal from "./components/GuideModal";
 
 function cleanUrl(url) {
@@ -30,18 +30,10 @@ export default function UrlCleaner() {
   const [copiedVideo, setCopiedVideo] = useState(false);
   const [copiedAudio, setCopiedAudio] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
-    }
-  }, []);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    setIsDark(!isDark);
   };
 
   const handleClean = async () => {
@@ -56,6 +48,7 @@ export default function UrlCleaner() {
     setCleanedVideoUrl(cleanedVideo);
     setCleanedAudioUrl(cleanedAudio);
     setIsProcessing(false);
+    setShowModal(true);
   };
 
   const handleDownloadVideo = () => {
@@ -88,6 +81,11 @@ export default function UrlCleaner() {
     setCleanedAudioUrl("");
     setCopiedVideo(false);
     setCopiedAudio(false);
+    setShowModal(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   const themeClasses = {
@@ -96,128 +94,145 @@ export default function UrlCleaner() {
     textSecondary: isDark ? 'text-gray-300' : 'text-gray-600',
     border: isDark ? 'border-gray-700' : 'border-gray-200',
     input: isDark ? 'bg-gray-800 border-gray-600 text-white focus:border-blue-400' : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500',
-    resultBg: isDark ? 'bg-gray-800' : 'bg-gray-50'
+    resultBg: isDark ? 'bg-gray-800' : 'bg-gray-50',
+    modalBg: isDark ? 'bg-gray-900' : 'bg-white',
+    overlayBg: isDark ? 'bg-black bg-opacity-75' : 'bg-black bg-opacity-50'
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 flex items-center justify-center p-4 z-999`}>
-      <div className={`w-full max-w-4xl ${themeClasses.cardBg} shadow-2xl rounded-2xl overflow-hidden transition-all duration-500 transform hover:scale-[1.01]`}>
-        {/* Header */}
-        <div className={`p-6 border-b ${themeClasses.border} flex items-center justify-between`}>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className={`text-2xl font-bold ${themeClasses.text}`}>
-                GDrive URL Cleaner
-              </h1>
-              <p className={`text-sm ${themeClasses.textSecondary}`}>
-                Clean View-Only Google Drive URLs instantly
-              </p>
-            </div>
-          </div>
-          
-          <button
-            onClick={toggleTheme}
-            className={`p-3 rounded-xl transition-all duration-300 ${
-              isDark 
-                ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            } transform hover:scale-110`}
-          >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
-        </div>
-
-        <div className="p-6 space-y-6">
-          {/* Input Section */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <label className={`block text-sm font-semibold ${themeClasses.text} flex items-center space-x-2`}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                <span>Video URL</span>
-              </label>
-              <div className="relative">
-                <input
-                  className={`w-full p-4 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-200 focus:outline-none ${themeClasses.input}`}
-                  type="text"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="Paste your Google Drive video URL here..."
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                  <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    videoUrl ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></div>
-                </div>
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-all duration-500 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Background Pattern */}
+      <div className={`fixed inset-0 pointer-events-none z-0 ${
+        isDark 
+          ? '[background-image:radial-gradient(#404040_1px,transparent_1px)]' 
+          : '[background-image:radial-gradient(#d4d4d4_1px,transparent_1px)]'
+      } [background-size:20px_20px]`} />
+      
+      <div className="relative z-10 w-full max-w-4xl">
+        <div className={`${themeClasses.cardBg} shadow-2xl rounded-2xl transition-all duration-500 transform hover:scale-[1.01]`}>
+          {/* Header */}
+          <div className={`p-6 border-b ${themeClasses.border} flex items-center justify-between`}>
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className={`text-2xl font-bold ${themeClasses.text}`}>
+                  GDrive URL Cleaner
+                </h1>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>
+                  Clean View-Only Google Drive URLs instantly
+                </p>
               </div>
             </div>
-
-            <div className="space-y-3">
-              <label className={`block text-sm font-semibold ${themeClasses.text} flex items-center space-x-2`}>
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                <span>Audio URL</span>
-              </label>
-              <div className="relative">
-                <input
-                  className={`w-full p-4 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-200 focus:outline-none ${themeClasses.input}`}
-                  type="text"
-                  value={audioUrl}
-                  onChange={(e) => setAudioUrl(e.target.value)}
-                  placeholder="Paste your Google Drive audio URL here..."
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                  <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    audioUrl ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-4 z-40">
-            <button
-              onClick={handleClean}
-              disabled={(!videoUrl && !audioUrl) || isProcessing}
-              className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
-                isDark
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25'
-                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25'
-              }`}
-            >
-              {isProcessing ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Processing...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center space-x-2">
-                  <Zap className="w-5 h-5" />
-                  <span>Clean URLs</span>
-                </div>
-              )}
-            </button>
             
             <button
-              onClick={handleReset}
-              className={`px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                isDark
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-              }`}
+              onClick={toggleTheme}
+              className={`p-3 rounded-xl transition-all duration-300 ${
+                isDark 
+                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              } transform hover:scale-110`}
             >
-              <div className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5" />
-                <span>Reset</span>
-              </div>
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+            <GuideModal />
           </div>
 
-          {/* Results Section */}
-          {(cleanedVideoUrl || cleanedAudioUrl) && (
-            <div className={`space-y-6 pt-6 border-t ${themeClasses.border} animate-fade-in`}>
+          <div className="p-6 space-y-6">
+            {/* Input Section */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className={`block text-sm font-semibold ${themeClasses.text} flex items-center space-x-2`}>
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Video URL</span>
+                </label>
+                <div className="relative">
+                  <input
+                    className={`w-full p-4 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-200 focus:outline-none ${themeClasses.input}`}
+                    type="text"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="Paste your Google Drive video URL here..."
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                    <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      videoUrl ? 'bg-green-500' : 'bg-gray-300'
+                    }`}></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className={`block text-sm font-semibold ${themeClasses.text} flex items-center space-x-2`}>
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  <span>Audio URL</span>
+                </label>
+                <div className="relative">
+                  <input
+                    className={`w-full p-4 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-200 focus:outline-none ${themeClasses.input}`}
+                    type="text"
+                    value={audioUrl}
+                    onChange={(e) => setAudioUrl(e.target.value)}
+                    placeholder="Paste your Google Drive audio URL here..."
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                    <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      audioUrl ? 'bg-green-500' : 'bg-gray-300'
+                    }`}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={handleClean}
+                disabled={(!videoUrl && !audioUrl) || isProcessing}
+                className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+                  isDark
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25'
+                }`}
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Processing...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <Zap className="w-5 h-5" />
+                    <span>Clean URLs</span>
+                  </div>
+                )}
+              </button>
+              
+              <button
+                onClick={handleReset}
+                className={`px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  isDark
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Trash2 className="w-5 h-5" />
+                  <span>Reset</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Modal */}
+      {showModal && (cleanedVideoUrl || cleanedAudioUrl) && (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${themeClasses.overlayBg}`}>
+          <div className={`w-full max-w-4xl max-h-[90vh] ${themeClasses.modalBg} rounded-2xl shadow-2xl overflow-hidden`}>
+            {/* Modal Header */}
+            <div className={`p-6 border-b ${themeClasses.border} flex items-center justify-between`}>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
@@ -226,8 +241,21 @@ export default function UrlCleaner() {
                   Cleaned URLs Ready!
                 </h3>
               </div>
-              
-              <div className="grid gap-6">
+              <button
+                onClick={closeModal}
+                className={`p-2 rounded-lg transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                } transform hover:scale-110`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Scrollable Modal Content */}
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+              <div className="space-y-6">
                 {cleanedVideoUrl && (
                   <div className={`p-6 rounded-xl ${themeClasses.resultBg} border ${themeClasses.border} transition-all duration-300 hover:shadow-lg`}>
                     <div className="flex items-center space-x-2 mb-4">
@@ -296,7 +324,7 @@ export default function UrlCleaner() {
                       </button>
                       <button
                         onClick={() => handleCopyToClipboard(cleanedAudioUrl, 'audio')}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:Scale-105 ${
                           copiedAudio
                             ? 'bg-green-500 text-white'
                             : isDark
@@ -323,9 +351,9 @@ export default function UrlCleaner() {
                 )}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       <style jsx>{`
         @keyframes fade-in {

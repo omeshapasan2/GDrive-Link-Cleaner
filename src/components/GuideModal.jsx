@@ -22,9 +22,13 @@ const GuideModal = ({ isDark = true }) => {
       {/* Trigger Button */}
       <button
         onClick={openModal}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg shadow-blue-500/25 z-999"
+        className={`p-3 rounded-xl transition-all duration-300 ${
+                isDark 
+                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              } transform hover:scale-110`}
       >
-        <Info className="w-4 h-4" />
+        <Info className="w-5 h-5" />
       </button>
 
       {/* Modal Overlay */}
